@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iI2ZmY2MwMCIvPjx0ZXh0IHg9IjUwIiB5PSI1OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI4IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMDAwIj5NVE48L3RleHQ+PC9zdmc+">
+    <title>🎉 MTN Playbox - Win Amazing Prizes!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <img class="loading-logo-img"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iI2ZmY2MwMCIvPjx0ZXh0IHg9IjUwIiB5PSI1OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI4IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjMDAwIj5NVE48L3RleHQ+PC9zdmc+"
+            alt="MTN">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Verifying MTN Line...</div>
+        <div class="loading-subtext">Please wait</div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification" style="display: none;">
+        <span>🎉</span>
+        <span>Ade O. just won ₦50,000!</span>
+    </div>
+
+    <!-- MTN Header -->
+    <div class="mtn-header">
+        <img class="mtn-header-logo"
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iIzAwMCIvPjx0ZXh0IHg9IjUwIiB5PSI1OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI4IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjZmZjYzAwIj5NVE48L3RleHQ+PC9zdmc+"
+            alt="MTN">
+        <span class="mtn-header-text">MTN Playbox Official Partner</span>
+        <span class="verified-badge">✓ Verified</span>
+    </div>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="congrats-badge">💰 Congratulations!</div>
+            <h1>You've Been <span>Selected</span> to Win!</h1>
+            <p>🎯 Spin the wheel to claim your prize now</p>
+        </div>
+
+        <!-- Wheel Section -->
+        <div class="wheel-section">
+            <div class="spin-instruction">👆 TAP THE WHEEL TO SPIN!</div>
+
+            <!-- Prize Wheel -->
+            <div class="wheel-container" id="wheelContainer" onclick="spinWheel()">
+                <div class="pointer"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-inner"></div>
+                </div>
+            </div>
+
+            <!-- Prize Labels -->
+            <div class="prize-labels">
+                <div class="prize-label"><span>💰</span> ₦1,000,000</div>
+                <div class="prize-label"><span>📱</span> MTN Airtime</div>
+                <div class="prize-label"><span>💵</span> ₦500,000</div>
+                <div class="prize-label"><span>🎰</span> JACKPOT</div>
+            </div>
+
+            <!-- Reward Info -->
+            <div class="reward-info">
+                <p>🎁 You have received a reward</p>
+                <p class="reward-subtext">Rewards vary by availability</p>
+            </div>
+            <!-- Timer -->
+            <div class="timer-box">
+                <div class="timer-title">⏰ Expires In</div>
+                <div class="timer-display">
+                    <div class="timer-unit">
+                        <div class="timer-number" id="minutes">02</div>
+                        <div class="timer-label">Min</div>
+                    </div>
+                    <div class="timer-unit">
+                        <div class="timer-number" id="seconds">00</div>
+                        <div class="timer-label">Sec</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Winners Section -->
+        <div class="wheel-section" style="padding-top:0;">
+            <div class="winners-section">
+                <div class="winners-title">
+                    <span>🏆</span> Recent Winners
+                </div>
+                <div id="winners-list">
+                    <div class="winner-item">
+                        <div class="winner-info">
+                            <div class="winner-avatar">AO</div>
+                            <div>
+                                <div class="winner-name">Ade O***a</div>
+                                <div class="winner-time">Lagos • 2 mins ago</div>
+                            </div>
+                        </div>
+                        <div class="winner-prize">₦50,000</div>
+                    </div>
+                    <div class="winner-item">
+                        <div class="winner-info">
+                            <div class="winner-avatar">BM</div>
+                            <div>
+                                <div class="winner-name">Bles***g M.</div>
+                                <div class="winner-time">Abuja • 5 mins ago</div>
+                            </div>
+                        </div>
+                        <div class="winner-prize">₦100,000</div>
+                    </div>
+                    <div class="winner-item">
+                        <div class="winner-info">
+                            <div class="winner-avatar">CE</div>
+                            <div>
+                                <div class="winner-name">Chi***i E.</div>
+                                <div class="winner-time">Kano • 8 mins ago</div>
+                            </div>
+                        </div>
+                        <div class="winner-prize">iPhone 15</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-text">
+                By participating, you agree to MTN Playbox
+                <a href="https://www.mtn.ng/terms-and-conditions/" target="_blank">Terms & Conditions</a><br>
+                © 2026 MTN Nigeria Communications PLC. All rights reserved.
+            </p>
+        </div>
+    </div>
+
+    <!-- WIN MODAL (Dynamic Content) -->
+    <div class="modal-overlay" id="winModal">
+        <div class="win-modal">
+            <!-- Confetti -->
+            <div class="confetti" id="confetti"></div>
+
+            <div class="win-icon" id="winIcon">🎉</div>
+            <div class="win-title">CONGRATULATIONS!</div>
+            <div class="win-subtitle">You are today's lucky winner!</div>
+
+            <div class="win-prize-box">
+                <div class="win-prize-label">You've Won</div>
+                <div class="win-prize-amount" id="prizeAmount">₦500,000</div>
+            </div>
+
+            <button class="win-cta" onclick="claimPrize()">
+                🎁 CLAIM YOUR PRIZE NOW
+            </button>
+
+            <div class="win-timer">⚠️ Claim within 2 minutes or prize expires!</div>
+
+            <div class="mtn-badge">
+                <div class="mtn-badge-logo">MTN</div>
+                <div class="mtn-badge-text">Official MTN Playbox Winner</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
