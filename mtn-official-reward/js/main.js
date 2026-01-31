@@ -20,14 +20,14 @@ const CONFIG = {
 
 // ============= 8个奖品配置 (从12点钟方向顺时针，对应转盘图片) =============
 const PRIZES = [
-    { icon: '💰', name: '₦1,000,000', subtitle: 'Cash Prize' },      // 扇区0 - 黄色
+    { icon: '💰', name: '₦50,000', subtitle: 'Cash Prize' },         // 扇区0 - 黄色
     { icon: '📱', name: 'MTN Airtime', subtitle: 'Reward' },         // 扇区1 - 绿色
-    { icon: '💵', name: '₦500,000', subtitle: 'Instant Cash' },      // 扇区2 - 黄色
+    { icon: '💵', name: '₦3,000', subtitle: 'Cash' },                // 扇区2 - 黄色
     { icon: '📲', name: 'MTN Airtime', subtitle: 'Bonus' },          // 扇区3 - 绿色
-    { icon: '💎', name: '₦500,000', subtitle: 'Cash' },              // 扇区4 - 黄色
+    { icon: '💎', name: '₦50,000', subtitle: 'Cash' },               // 扇区4 - 黄色
     { icon: '🎁', name: 'MTN Airtime', subtitle: 'Bonus' },          // 扇区5 - 绿色
-    { icon: '🏆', name: '₦100,000', subtitle: 'Cash' },              // 扇区6 - 黄色
-    { icon: '🎰', name: 'MEGA JACKPOT', subtitle: '₦1,000,000' }     // 扇区7 - 红色
+    { icon: '🏆', name: '₦10,000', subtitle: 'Cash' },               // 扇区6 - 黄色
+    { icon: '🎰', name: 'MEGA JACKPOT', subtitle: '₦100,000' }       // 扇区7 - 红色
 ];
 
 // ============= STATE =============
@@ -37,15 +37,10 @@ let currentRotation = 0;
 let totalSeconds = CONFIG.countdownSeconds;
 let notifIndex = 0;
 
-// ============= LOADING OVERLAY =============
-setTimeout(function () {
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    loadingOverlay.classList.add('hidden');
+// ============= INIT NOTIFICATION =============
+document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('notification').style.display = 'flex';
-    setTimeout(function () {
-        loadingOverlay.style.display = 'none';
-    }, 300);
-}, CONFIG.loadingDuration);
+});
 
 // ============= TIMER COUNTDOWN =============
 function updateTimer() {
@@ -62,11 +57,14 @@ updateTimer();
 
 // ============= NOTIFICATIONS =============
 const notifications = [
-    '🎉 Ade O. just won ₦500,000!',
-    '💰 Blessing M. won MTN Airtime!',
-    '🏆 Chidi E. won ₦1,000,000!',
-    '🎊 Ngozi A. won ₦100,000!',
-    '💵 Tunde B. won MEGA JACKPOT!'
+    '📱 Ade O. just won ₦1,000 Airtime!',
+    '🎁 Blessing M. won ₦2,000 Airtime!',
+    '📱 Chidi E. won ₦500 Airtime!',
+    '🎊 Ngozi A. won ₦3,000 Airtime!',
+    '📱 Tunde B. won ₦1,500 Airtime!',
+    '🎁 Emeka K. won ₦2,500 Airtime!',
+    '📱 Fatima S. won ₦1,000 Airtime!',
+    '🎊 Yusuf D. won ₦5,000 Airtime!'
 ];
 
 function showNotification() {
@@ -77,7 +75,7 @@ function showNotification() {
     notifEl.style.animation = 'notifySlide 4s ease forwards';
     notifIndex = (notifIndex + 1) % notifications.length;
 }
-setInterval(showNotification, CONFIG.notificationInterval);
+setInterval(showNotification, CONFIG.notificationInterval + 1000);
 
 // ============= WHEEL SPIN =============
 function spinWheel() {
