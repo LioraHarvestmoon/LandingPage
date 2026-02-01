@@ -20,14 +20,14 @@ const CONFIG = {
 
 // ============= 8个奖品配置 (从12点钟方向顺时针，对应转盘图片) =============
 const PRIZES = [
-    { icon: '💰', name: '₦50,000', subtitle: 'Cash Prize' },         // 扇区0 - 黄色
+    { icon: '💰', name: '₦1,000,000', subtitle: 'Cash Prize' },      // 扇区0 - 黄色
     { icon: '📱', name: 'MTN Airtime', subtitle: 'Reward' },         // 扇区1 - 绿色
-    { icon: '💵', name: '₦3,000', subtitle: 'Cash' },                // 扇区2 - 黄色
+    { icon: '💵', name: '₦500,000', subtitle: 'Instant Cash' },      // 扇区2 - 黄色
     { icon: '📲', name: 'MTN Airtime', subtitle: 'Bonus' },          // 扇区3 - 绿色
-    { icon: '💎', name: '₦50,000', subtitle: 'Cash' },               // 扇区4 - 黄色
+    { icon: '💎', name: '₦500,000', subtitle: 'Cash' },              // 扇区4 - 黄色
     { icon: '🎁', name: 'MTN Airtime', subtitle: 'Bonus' },          // 扇区5 - 绿色
-    { icon: '🏆', name: '₦10,000', subtitle: 'Cash' },               // 扇区6 - 黄色
-    { icon: '🎰', name: 'MEGA JACKPOT', subtitle: '₦100,000' }       // 扇区7 - 红色
+    { icon: '🏆', name: '₦100,000', subtitle: 'Cash' },              // 扇区6 - 黄色
+    { icon: '🎰', name: 'MEGA JACKPOT', subtitle: '₦1,000,000' }     // 扇区7 - 红色
 ];
 
 // ============= STATE =============
